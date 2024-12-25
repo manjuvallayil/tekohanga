@@ -2,7 +2,7 @@ name: Deploy to Heroku
 
 on:
   push:
-    branches: [main]  # Trigger deployment on push to the main branch
+    branches: [master]  # Trigger deployment on push to the master branch
 
 jobs:
   deploy:
@@ -13,11 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Set up Python (adjust the version if needed)
+      # Set up Python (using version 3.11, which is supported by Heroku)
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.11'
 
       # Install dependencies
       - name: Install dependencies
@@ -35,7 +35,7 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          echo $HEROKU_API_KEY | heroku auth:token
+          heroku auth:token
           heroku git:remote -a ${{ secrets.HEROKU_APP_NAME }}
 
       # Deploy to Heroku
@@ -43,4 +43,4 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          git push heroku main
+          git push heroku master
