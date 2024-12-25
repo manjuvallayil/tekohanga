@@ -1,0 +1,94 @@
+{% extends 'layout.html' %}
+
+{% block title -%}Real Time EEG - EEG Software{%- endblock %}
+{% block page_name -%}Real Time EEG {%- endblock %}
+{% block breadcrumb -%}Real Time EEG {%- endblock %}
+
+{% block script_function %}
+<script type="text/javascript">
+        
+        $(document).ready(function(){
+            $('#host_selected').on('change', function () {
+            var host_selected = $('#host_selected option:selected').val();
+            $.ajax({
+                    url: '/get_host',
+                    type: 'get',
+                    data: {host_selected: host_selected},
+                });
+            });      
+        });
+
+        $(document).ready(function() {
+           $('#strm_btn').click(function(){
+            $("div.toshow").show();
+           });
+        });
+        $(document).ready(function(){
+            $('#psd').on('click', function () {
+                $('#strm_frame').show();
+                $("#strm_frame").attr('src', "{{ url_for('stream_psd') }}");
+                
+            });
+        });
+        $(document).ready(function(){
+        $('#psd_topo').on('click', function () {
+            $('#strm_frame').show();
+            $("#strm_frame").attr('src', "{{ url_for('stream_topo') }}");
+            
+            });
+        });
+        $(document).ready(function(){
+        $('#erp').on('click', function () {
+            $('#strm_frame').show();
+            $("#strm_frame").attr('src', "{{ url_for('stream_erp') }}");
+            
+            });
+        });
+
+</script>
+{% endblock %}
+
+{% block main %}
+<h4>Connect the EEG device and view data features</h4>
+<br>
+    <fieldset>
+        <div class="card mb-4" style="width:60%">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Select the device name from the dropdown menu and click Stream
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>For Streaming Data:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select class="form-select-sm" id="host_selected" name="host_selected">
+                                <option selected>Select Connected Device (Host) Name:</option>
+                                <option value="myuid323457">myuid323457</option>
+                                <option value="myuid323458">myuid323458</option>
+                                </select>
+                                <button class="btn btn-secondary" id="strm_btn" type = "submit"> Stream </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </table>
+        <div class="toshow", style = "display:none">
+            <h5 style="color:#404040;"><b>To view the data features, select an option from below..</b></h5>
+            <br> 
+            <label class="btn btn-secondary"><input type="radio" id="psd" name="view" value="Power Spectral Density">Power Spectral Density</label> 
+            <label class="btn btn-secondary"><input type="radio" id="psd_topo" name="view" value="Power Spectral Density_topomap">Power Spectral Density_topomap</label> 
+            <label class="btn btn-secondary"><input type="radio" id="erp" name="view" value="Event Related Potential">Event Related Potential</label>
+            <br><br>
+            <p>Streaming Data will appear below...</p>
+            <iframe id="strm_frame" src="" width="1000" height="500" frameBorder="0" allowfullscreen="" scrolling="no" display:none></iframe>
+        </div>
+    </fieldset>
+{% endblock %}

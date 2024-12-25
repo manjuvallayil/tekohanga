@@ -1,0 +1,25 @@
+<!doctype html>
+<head>
+<title>Stream</title>
+<h5 id="description">{{ description }}</h5>
+<!--
+{% for text in desc: %}
+<h5>text</h5>
+{% endfor %}
+-->
+<style>
+  #data {
+    text-align: center;
+  }
+</style>
+<link href="static/css/main.css" rel="stylesheet" />
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+<iframe id="data" src="" width="900" height="500" frameborder="0" allowfullscreen=""></iframe>
+{% for i in data: %}
+<script>
+  $("#data").attr('src', "{{ i }}");
+</script>
+{% endfor %}
+</body>

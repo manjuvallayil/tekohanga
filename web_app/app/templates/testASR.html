@@ -1,0 +1,86 @@
+{% extends 'layout.html' %}
+
+{% block title -%}Offline Audio - Te Kōhanga{%- endblock %}
+{% block page_name -%}Offline Audio{%- endblock %}
+{% block breadcrumb -%}ASR and Emotion Detection - Offline Audio Data{%- endblock %}
+
+{% block main %}
+    <h4>Upload an Audio File to Test ASR Features</h4>
+    <br>
+    <fieldset>
+        <div class="card mb-4" style="width:60%">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Browse and Select a File, Then Click Upload
+            </div>
+            <div class="card-body">
+                <form id="audioUploadForm">
+                    <table id="datatablesSimple">
+                        <thead>
+                            <tr>
+                                <th>Upload Offline Audio:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="file" id="multiFiles" name="files[]" multiple />
+                                    <button class="btn btn-secondary" id="upld_btn" type="submit">Upload to Test</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <div id="transcriptionResult" class="mt-4" style="display: none;">
+                    <h5>Transcription Result:</h5>
+                    <textarea id="transcriptionOutput" rows="5" cols="50" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+{% endblock %}
+
+{% block script_function %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('audioUploadForm');
+        const transcriptionResult = document.getElementById('transcriptionResult');
+        const transcriptionOutput = document.getElementById('transcriptionOutput');
+        const uploadButton = document.getElementById('upld_btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const files = document.getElementById('multiFiles').files;
+            if (!files.length) {
+                alert("Please select a file to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            Array.from(files).forEach(file => formData.append('files', file));
+
+            uploadButton.disabled = true;
+            transcriptionOutput.value = 'Uploading and processing...';
+            transcriptionResult.style.display = 'block';
+
+            try {
+                const response = await fetch('/upload-audio', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await response.json();
+                if (data.transcription) {
+                    transcriptionOutput.value = data.transcription;
+                } else {
+                    transcriptionOutput.value = 'No transcription available.';
+                }
+            } catch (error) {
+                transcriptionOutput.value = 'Error occurred. Please try again.';
+                console.error('Error:', error);
+            } finally {
+                uploadButton.disabled = false;
+            }
+        });
+    });
+</script>
+{% endblock %}

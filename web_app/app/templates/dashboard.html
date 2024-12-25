@@ -1,0 +1,128 @@
+{% extends 'layout.html' %}
+
+{% block title -%}Autonomous Listening - Te Kōhanga{%- endblock %}
+{% block page_name -%}Autonomous Listening{%- endblock %}
+{% block breadcrumb -%}Real Time ASR & Emotion Detection{%- endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col text-left">
+        <br>
+        <h4>ASR & Emotion Detection</h4>
+        <textarea id="transcription" rows="4" cols="50" readonly style="display: none;">Waiting for transcription...</textarea>
+        <button id="startButton" class="btn btn-secondary">Allow Listening</button>
+        <button id="stopButton" class="btn btn-danger" style="display: none;">Stop Recording</button>
+    </div>
+</div>
+<br><br>
+<div class="row mt-5">
+    <!-- First Card -->
+    <div class="col-xl-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-area me-1"></i>
+                Whānau-centred Learning
+            </div>
+            <img src="{{ url_for('static', filename='figs/Whānau-centredlearning approach.png') }}" alt="learning approach" width="100%" height="180"/>
+        </div>
+    </div>
+    <!-- Second Card -->
+    <div class="col-xl-5">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Concepts Example
+            </div>
+            <img src="{{ url_for('static', filename='figs/concepts.png') }}" alt="Concepts Image" width="100%" height="180"/>
+        </div>
+    </div>
+    <!-- Third Card -->
+    <div class="col-xl-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-area me-1"></i>
+                Rauemi Taonga/ Resources
+            </div>
+            <img src="{{ url_for('static', filename='figs/Tui.jpg') }}" alt="Rauemi Taonga/ Resources" width="100%" height="180"/>
+        </div>
+    </div>
+</div>
+
+<!-- Data Example Table -->
+<div class="card mb-4" style="width: 92%;">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Data Example Entries
+    </div>
+    <div class="card-body">
+        <!-- Dynamic content can be populated here -->
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script_function %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const transcriptionTextArea = document.getElementById('transcription');
+
+        let mediaRecorder;
+        let audioChunks = [];
+
+        startButton.addEventListener('click', () => {
+            // Show the transcription box and set its initial value
+            transcriptionTextArea.style.display = 'block';
+            transcriptionTextArea.value = 'Waiting for transcription...';
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+
+                    transcriptionTextArea.value = 'Recording...';
+                    startButton.style.display = 'none';
+                    stopButton.style.display = 'inline';
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    stopButton.addEventListener('click', () => {
+                        mediaRecorder.stop();
+                        startButton.style.display = 'inline';
+                        stopButton.style.display = 'none';
+                        transcriptionTextArea.value = 'Processing...';
+
+                        mediaRecorder.onstop = () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                            const formData = new FormData();
+                            formData.append('audio', audioBlob);
+
+                            fetch('/process-audio', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log("Transcription Response:", data); // Log for debugging
+                                transcriptionTextArea.value = data.transcription || 'No transcription available.';
+                            })
+                            .catch(error => {
+                                transcriptionTextArea.value = 'Error occurred. Please try again.';
+                                console.error('Error:', error);
+                            });
+
+                            audioChunks = []; // Clear the audio chunks for the next recording
+                        };
+                    });
+                })
+                .catch(error => {
+                    transcriptionTextArea.value = 'Microphone access denied.';
+                    console.error('Error accessing microphone:', error);
+                });
+        });
+    });
+</script>
+{% endblock %}
