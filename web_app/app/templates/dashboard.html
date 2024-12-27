@@ -2,30 +2,56 @@
 
 {% block title -%}Autonomous Listening - Te Kōhanga{%- endblock %}
 {% block page_name -%}Autonomous Listening{%- endblock %}
-{% block breadcrumb -%}Real Time ASR & Emotion Detection{%- endblock %}
+{% block breadcrumb -%}ASR and Emotion Detection - Real Time{%- endblock %}
 
 {% block main %}
-<div class="row">
-    <div class="col text-left">
-        <br>
-        <h4>ASR & Emotion Detection</h4>
-        <textarea id="transcription" rows="4" cols="50" readonly style="display: none;">Waiting for transcription...</textarea>
-        <button id="startButton" class="btn btn-secondary">Allow Listening</button>
-        <button id="stopButton" class="btn btn-danger" style="display: none;">Stop Recording</button>
+<div class="container mt-4">
+    <!-- Dashboard Heading -->
+    <div class="card text-center mb-4">
+        <div class="card-header">
+            <h4>ASR & Emotion Detection Dashboard</h4>
+        </div>
+        <div class="card-body">
+            <h5>Manage Real-Time and Offline Features</h5>
+            <br>
+            <textarea id="transcription" rows="4" cols="50" readonly class="form-control" style="display: none; width: auto; min-width: 100px; max-width: 700px;">Waiting for transcription...</textarea>
+            <br><br>
+            <button id="startButton" class="btn btn-secondary">Allow Listening</button>
+            <button id="stopButton" class="btn btn-danger" style="display: none;">Stop Recording</button>
+        </div>
     </div>
-</div>
-<br><br>
-<!-- Data Example Table -->
-<div class="card mb-4" style="width: 92%;">
-    <div class="card-header">
-        <i class="fas fa-table me-1"></i>
-        Data Example Entries
-    </div>
-    <div class="card-body">
-        <!-- Dynamic content can be populated here -->
-    </div>
-</div>
 
+    <!-- Data Example Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Data Example Entries
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Details</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Example Data 1</td>
+                        <td>Details about Data 1</td>
+                        <td>Active</td>
+                    </tr>
+                    <tr>
+                        <td>Example Data 2</td>
+                        <td>Details about Data 2</td>
+                        <td>Inactive</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block script_function %}

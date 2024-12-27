@@ -29,6 +29,14 @@ emotion_classifier = foreign_class(
 )
 print("SpeechBrain Emotion Classifier loaded successfully.")
 
+# Emotion mapping dictionary
+EMOTION_LABELS = {
+    "neu": "Neutral",
+    "ang": "Angry",
+    "hap": "Happy",
+    "sad": "Sad",
+}
+
 # Directory to save audio files
 AUDIO_DIR = "web_app/app/static/audio_files"
 os.makedirs(AUDIO_DIR, exist_ok=True)
@@ -36,6 +44,11 @@ os.makedirs(AUDIO_DIR, exist_ok=True)
 app = Flask(__name__)
 
 @app.route('/')
+def login():
+    """Render the main transcription page."""
+    return render_template('login.html')
+
+@app.route('/dashboard')
 def dashboard():
     """Render the main transcription page."""
     return render_template('dashboard.html')
@@ -125,16 +138,23 @@ def upload_audio():
             # Emotion detection
             _, _, _, emotion_label = emotion_classifier.classify_file(output_path)
 
+            # Map the emotion label to its full text
+            full_emotion_label = EMOTION_LABELS.get(emotion_label[0], "Unknown")
+
+
             # Append results
             transcriptions.append(
                 f"Transcription: {transcription}, \n"
                 f"Translation to English: {translation}, \n"
-                f"Emotion Detected from Audio: {emotion_label}"
             )
 
         # Join all transcriptions if multiple files are uploaded
         response_text = "\n\n".join(transcriptions)
-        return jsonify({"transcription": response_text})
+        #return jsonify({"transcription": response_text})
+        return jsonify({
+        "transcription": response_text,
+        "emotion": full_emotion_label
+        })
 
     except Exception as e:
         print(f"Error processing audio: {e}")

@@ -46,7 +46,7 @@
                         <li><a class="dropdown-item" href="#!">Settings</a></li>
                         <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                         <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Logout</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('login')}}">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -110,7 +110,10 @@
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Te Ipukarea Research Institute 2025</div>
+                            <div class="text-muted">
+                                Copyright &copy; Te Ipukarea Research Institute 2025, 
+                                <a href="https://www.teipukarea.maori.nz/en" target="_blank">Visit Our Website</a>
+                            </div>
                             <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;
