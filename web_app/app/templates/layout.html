@@ -62,24 +62,26 @@
                                 Dashboard 
                             </a>
                             <div class="sb-sidenav-menu-heading">Interface</div>
-                            <a class="nav-link" href="{{ url_for('asr')}}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                                Test ASR
-                            </a>
                             <a class="nav-link" href="{{ url_for('dashboard')}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Real Time Data
                             </a>
-                            <a class="nav-link" href="{{ url_for('dashboard')}}">
+
+                            <a class="nav-link" href="{{ url_for('asr')}}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Test ASR
+                            </a>
+                            
+                            <a class="nav-link" href="{{ url_for('stream')}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Train & Save Model
+                                Test AudioSimulation
                             </a>
                             <div class="sb-sidenav-menu-heading">Settings</div>
                             <a class="nav-link" href="{{ url_for('dashboard')}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                                 Manage Users
                             </a>
-                            <a class="nav-link" href="{{ url_for('dashboard')}}">
+                            <a class="nav-link" href="{{ url_for('login')}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 Logout
                             </a>

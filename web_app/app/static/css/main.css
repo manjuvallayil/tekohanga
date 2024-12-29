@@ -2197,7 +2197,7 @@ progress {
   color: #212529;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid #ced4da;
+  border: 1px solid #880808;
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -7831,12 +7831,13 @@ textarea.form-control-lg {
 
 .bg-secondary {
   --bs-bg-opacity: 0.60;
-  background-color: rgba(var(--bs-secondary-rgb), var(--bs-bg-opacity)) !important;
+  /* background-color: rgba(var(--bs-secondary-rgb), var(--bs-bg-opacity)) !important; */
+  background-image: url('/static/figs/bgdark.jpg');
 }
 
 .bg-success {
   --bs-bg-opacity: 1;
-  background-color: rgba(var(--bs-success-rgb), var(--bs-bg-opacity)) !important;
+  background-color: rgba(136, 8, 8, var(--bs-bg-opacity)) !important; 
 }
 
 .bg-info {
@@ -11427,7 +11428,7 @@ body {
 
 .sb-topnav {
   padding-left: 0;
-  height: 56px;
+  height: 75px;
   z-index: 1039;
 }
 .sb-topnav .navbar-brand {
