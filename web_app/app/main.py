@@ -1,13 +1,16 @@
 ## Links for ref:
 # ASR model -> https://huggingface.co/openai/whisper-large-v3
-# emotion detection docs -> https://speechbrain.github.io/ AND
+# emotion detection docs -> https://speechbrain.github.io/ AND https://huggingface.co/speechbrain/emotion-recognition-wav2vec2-IEMOCAP/blob/main/label_encoder.txt
 # emotion detection hf model -> https://huggingface.co/speechbrain/emotion-recognition-wav2vec2-IEMOCAP
 
+
 import os
+import json
 import torch
 import tempfile
 import subprocess
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response, stream_with_context
+#from flask_ngrok import run_with_ngrok
 from transformers import pipeline
 from speechbrain.inference.interfaces import foreign_class
 import torchaudio
@@ -17,6 +20,7 @@ import time
 os.environ["PATH"] += os.pathsep + "/home/qsh5523/miniconda3/envs/tereo/bin"
 # Load Whisper ASR model with GPU support
 device = 0 if torch.cuda.is_available() else -1  # Use GPU if available
+
 pipe = pipeline("automatic-speech-recognition", model="openai/whisper-large-v3", device=device)
 print("Whisper model loaded successfully.")
 
@@ -42,6 +46,7 @@ AUDIO_DIR = "web_app/app/static/audio_files"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
 app = Flask(__name__)
+#run_with_ngrok()
 
 @app.route('/')
 def login():
@@ -58,6 +63,13 @@ def asr():
     """Render the main transcription page."""
     return render_template('testASR.html')
 
+@app.route('/teststream')
+def stream():
+    """Render the main transcription page."""
+    return render_template('testSTREAM.html')
+#################################################Functions#############################################
+
+################# dashboard ################# 
 @app.route('/process-audio', methods=['POST'])
 def process_audio():
     try:
@@ -92,7 +104,46 @@ def process_audio():
     except Exception as e:
         print(f"Error processing audio: {e}")
         return jsonify({"error": str(e)}), 500
+    
+################# testSTREAM #################   
+@app.route('/simulate-audio', methods=['POST'])
+def simulate_audio():
+    @stream_with_context
+    def generate():
+        try:
+            # Save uploaded file
+            audio_file = request.files['file']
+            file_path = os.path.join(tempfile.gettempdir(), audio_file.filename)
+            audio_file.save(file_path)
 
+            # Simulate real-time processing
+            chunk_size = 16000  # 1 second of audio for 16kHz mono audio
+            waveform, sample_rate = torchaudio.load(file_path)
+
+            for i in range(0, waveform.size(1), chunk_size):
+                chunk = waveform[:, i:i + chunk_size]
+                temp_chunk_file = os.path.join(tempfile.gettempdir(), f"chunk_{i}.wav")
+                torchaudio.save(temp_chunk_file, chunk, sample_rate)
+
+                # Transcribe audio chunk
+                transcription_result = pipe(temp_chunk_file)
+                transcription = transcription_result["text"]
+
+                # Emotion detection
+                _, _, _, emotion_label = emotion_classifier.classify_file(temp_chunk_file)
+                full_emotion_label = EMOTION_LABELS.get(emotion_label[0], "Unknown")
+
+                # Yield the chunk's result
+                yield f'{json.dumps({"transcription": transcription, "emotion": full_emotion_label})}\n'
+
+        except Exception as e:
+            print(f"Error during simulation: {e}")
+            yield f'{json.dumps({"error": str(e)})}\n'
+
+    # Use Flask's Response object with the generator
+    return Response(generate(), content_type='application/json')
+
+################# testASR #################  
 @app.route('/upload-audio', methods=['POST'])
 def upload_audio():
     try:
@@ -161,4 +212,7 @@ def upload_audio():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+
